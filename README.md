@@ -17,7 +17,7 @@ Com o GraphQL podemos realizar queries diferentes para cada dispositivo, assim r
 
 É aqui que começamos a ver que teremos um bom trabalho: juntar dados de bancos diferentes e enviar uma estrutura diferente para cada tipo de aplicação.
 
-![Normal APIs vs GraphQL APIs](images/graphql-diferenca.png)
+![Normal APIs vs GraphQL APIs](imagens/graphql-diferenca.png)
 
 Ao invés de ter que ficar criando uma API para cada estrutura diferente de dados e/ou ficar manualmente fazendo consultas para cada banco e depois juntar os dados, que tal simplesmente dizer a "alguém" o que você precisa? Apenas indique ao GraphQL o que você precisa e ele irá fazer todo o trabalho.
 

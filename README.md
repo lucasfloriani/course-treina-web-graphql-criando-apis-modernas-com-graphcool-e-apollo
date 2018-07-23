@@ -170,3 +170,15 @@ Caso ocorra algum erro, execute o comando abaixo:
 ```node
 mkdit ~/.graphcool
 ```
+
+### Realizando o deploy
+
+```node
+graphcool-framework deploy
+```
+
+### Abrir site do seu projeto
+
+```node
+graphcool-framework playground
+```

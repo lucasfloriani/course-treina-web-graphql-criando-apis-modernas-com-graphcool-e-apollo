@@ -1,0 +1,12 @@
+type Pessoa @model{
+  id: ID! @isUnique
+  nome: String!
+  idade: Int!
+  posts: [Post!]! @relation(name: "PessoaPosts")
+}
+
+type Post @model{
+  id: ID! @isUnique
+  titulo: String!
+  autor: Pessoa! @relation(name: "PessoaPosts")
+}

@@ -177,8 +177,24 @@ mkdit ~/.graphcool
 graphcool-framework deploy
 ```
 
-### Abrir site do seu projeto
+### Abrir site para edição do graphql do seu projeto
 
 ```node
 graphcool-framework playground
+```
+
+Caso queira resgatar as urls das apis, você poderá clicar no botão de endpoints dentro da página do playground.
+
+### Exemplo de query por POST
+
+```node
+fetch('insira-sua-url-da-api-simples-aqui', {
+  method: 'post',
+  headers: {
+    'Content-Type': 'application/json'
+    },
+  body: `{"query": "{allPessoas{id nome}}"}`,
+})
+.then(response => response.json())
+.then(data => console.log(data))
 ```

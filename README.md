@@ -617,17 +617,258 @@ mutation removerPessoa($id: ID!) {
 }
 ```
 
-### Meta Fields
+## Schema e Tipos
 
-Usado para verificar dados sobre determinado campo.
-O campo "__typename" irá retornar "Pessoa", nos permitindo saber que o nome do tipo do dado que recebemos é "Pessoa".
+O GraphQL foi projetado para se trabalhar com qualquer linguagem de programação. Por isso que ao invés de seguir a sintaxe de uma linguagem especifica, foi criada uma linguagem própria, o GSL (GraphQL Schema Language). Ela é bem parecida com a sintaxe que usamos para escrever as consultas.
+
+```node
+type Pessoa{
+   nome: String!
+   idade: Int!
+   posts: [Post]!
+}
+```
+
+Ela é tão parecida com a própria sintaxe da consulta que no começo é comum se confundir. Mas isso é proposital para que a gente não tenha que aprender sintaxes diferentes para mexer com a mesma ferramenta, acelerando o processo de aprendizado.
+
+* Primeiro declaramos que estamos criando um tipo com "type";
+* **Pessoa** indica o tipo do objeto que estamos criando. Em uma linguagem de programação seria como criar uma "classe";
+* **nome, idade e posts** são os nomes dos campos de "Pessoa", indicando que podemos pedir por estes campos quando fizermos uma consulta que envolva "Pessoa";
+* **String e Int** estão indicando o tipo do dado. O tipo do dado é indicado após ":";
+* **"!"** indica que esse campo é obrigatório. Nesse exemplo estamos dizendo que não pode haver uma "Pessoa" sem os dados de "nome" e "idade" em nosso banco. Então ao inserir uma nova Pessoa, esses dados não podem faltar. Ao fazer a consulta podemos ignorar esses campos caso a gente não queira que eles retornem;
+* **"[]"** indica que esse campo é uma lista. No nosso exemplo estamos indicando que o campo "posts" é uma lista do tipo "Post", que é um outro objeto. Já que no nosso exemplo indicamos que é um campo obrigatório, caso não haja dados teremos um Array vazio como retorno ao invés do valor "null".
+
+### Argumentos
+
+Cada campo que declaramos em um objeto pode receber zero ou mais argumentos (ou parâmetros), os quais indicam mais algumas informações sobre o dado.
+
+```node
+type Pessoa{
+   id: ID!
+   nome: String!
+   altura(unit: LengthUnit = METER): Float
+}
+```
+
+Veja que declaramos a unidade do campo "altura" com um valor padrão "METER". Imagine que temos então o dado de "altura" em metros, mas nossa API será acessada em lugares onde medimos a altura em "pés". Ao invés de cada cliente fazer a conversão, podemos simplesmente indicar à query que queremos o dado em pés, e já receberemos o valor no formato requisitado.
+
+Diferente de parâmetros que passamos em funções, que é importante saber a ordem, no GraphQL podemos colocar em qualquer oderm, já que nós sempre indicamos o nome do parâmetro que estamos passando.
+
+O GraphQL já vem com alguns tipos definidos, mas também podemos declarar os nossos próprios.
+
+### Scalar Types
+
+São campos com tipo fixo e que não possuem outros campos, como por exemplo o campo "nome" que retorna uma String, diferente do campo "posts" que contem outros campos dentro dele.
+
+São scalar types os:
+
+* **Int** - Números inteiros de 32-bits com sinal;
+* **Float** - Números flutuantes de dupla precisão com sinal;
+* **String** - Sequência de caracteres UTF-8;
+* **Boolean** - true ou false;
+* **ID** - Identificador única usado como chave para retornar objetos.
+
+Na maioria das implementações do GraphQL é possível especificar novos Scalar Types. Imagine um campo do tipo "Date". Podemos definir como o dado será serializado e deserializado. Ou seja, podemos armazenas a data em um Timestamp mas ao retornar ao usuário, enviaremos sempre a data de modo legível no formato "YYYY/MM/DD".
+
+### Enumeration Types
+
+Famosos Enums, são um tipo especial de Scalar Types, os quais são restritos a um grupo de valores em particular.
+
+Podemos criar um enum para ajudar a criar uma inscrição, onde somente os valores "CREATED", "UPDATED" e "DELETED" são usados, assim garantindo que nenhum outro valor seja utilizado.
+
+```node
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+```
+
+### Listas e Null
+
+#### 1ª Possibilidade: [ Post ]!
+
+```node
+type Pessoa{
+  posts: [ Post ]!
+}
+```
+
+Veja que o "!" só está com o "[]". Isso indica que o campo "post" (a própria lista) não pode ser nulo. Caso não haja dados, pelo menos um Array vazio será retornado.
+
+```node
+posts: null // inválido
+posts: []    // válido
+posts: [ {titulo: "Treinaweb"}, {titulo: "GraphQL"} ] // válido
+posts: [ {titulo: "Treinaweb"}, null ] // válido
+```
+
+#### 2ª Possibilidade: [ Post! ]
+
+Veja que o "!" está apenas com o "Post". Isso indica que o próprio Post não pode ser nulo, mas a lista (campo "posts") sim.
+
+```node
+posts: null // válido
+posts: []    // válido
+posts: [ {titulo: "Treinaweb"}, {titulo: "GraphQL"} ] // válido
+posts: [ {titulo: "Treinaweb"}, null ] // inválido
+```
+
+#### 3ª Possibilidade: [ Post! ]!
+
+Veja que o "!" está com o "Post" e com o "[]". Isso indica que o próprio Post não pode ser nulo e se não tiver dados, será retornada uma lista vazia.
+
+```node
+posts: null // inválido
+posts: []    // válido
+posts: [ {titulo: "Treinaweb"}, {titulo: "GraphQL"} ] // válido
+posts: [ {titulo: "Treinaweb"}, null ] // inválido
+```
+
+#### 4ª Possibilidade: [ Post ]
+
+Não há "!". Qualquer campo pode vir nulo.
+
+```node
+posts: null // válido
+posts: []    // válido
+posts: [ {titulo: "Treinaweb"}, {titulo: "GraphQL"} ] // válido
+posts: [ {titulo: "Treinaweb"}, null ] // válido
+```
+
+### Interfaces
+
+Interface é um tipo abstrato que possui um grupo de campos. Se criarmos um tipo que implemente determinada interface, esse tipo deverá possuir os tipos definidos na interface.
+
+Interfaces são úteis quando nós queremos retornar um objeto ou um grupo deles, mas estes talvez serão de vários tipos diferentes, por exemplo:
+
+```node
+// Query
+query HeroForEpisode($ep: Episode!) {
+  hero(episode: $ep) {
+    name
+    primaryFunction
+  }
+}
+```
+
+```node
+// Variáveis
+{
+  "ep": "JEDI"
+}
+```
+
+```node
+// Retorno
+{
+  "errors": [
+    {
+      "message": "Cannot query field \"primaryFunction\" on type \"Character\". Did you mean to use an inline fragment on \"Droid\"?",
+      "locations": [
+        {
+          "line": 4,
+          "column": 5
+        }
+      ]
+    }
+  ]
+}
+```
+
+O campo hero retorna um tipo Character, isso significa que ele talvez seja um Human ou um Droid dependendo do episódio no argumento.
+Na query acima, você pode somente perguntar por campos que existem na interface do Character, o qual não inclue primaryFunction.
+
+Para receber um campo de um tipo de objeto especifico, você precisa usar um inline fragment:
+
+### Inline Fragments
+
+Quando vimos como criar consultas, vimos também sobre "Fragmentos", que nos permitem indicar um grupo de campos e chamar esse grupo depois para fazer consulta.
+
+Quando temos "Interfaces" ou "Union Types", podemos indicar fragmentos sem declará-los. Esses são os "Inline Fragments".
+
+Eles são muito úteis quando queremos buscar um ou mais dados e o tipo retornado pode ter campos específicos de cada tipo de dado.
+
+```node
+// Query
+query HeroForEpisode($ep: Episode!) {
+  hero(episode: $ep) {
+    name
+    ... on Droid {
+      primaryFunction
+    }
+  }
+}
+```
+
+```node
+// Variáveis
+{
+  "ep": "JEDI"
+}
+```
+
+```node
+// Retorno
+{
+  "data": {
+    "hero": {
+      "name": "R2-D2",
+      "primaryFunction": "Astromech"
+    }
+  }
+}
+```
+
+Fragmentos nomeados tambem podem ser usados do mesmo modo, sendo que fragmentos nomeados sempre tem um tipo atrelado a ele.
+
+### Union Types
+
+São parecidos com as Interfaces, mas não precisam especificar os campos em comum entre os tipos
+
+```node
+union Resulta = Adulto | Crianca
+```
+
+Quando retornarmos "Resultado", poderemos ter um "Adulto" ou uma "Criança".
+
+É importante lembrar que em tipos "Union", os tipos passados precisam ser concretos, ou seja, não são aceitas Interfaces ou outros Union Types.
+
+Neste caso, se você buscar um campo que retorne o union type "Resultado", você precisa usar o fragmento inline para conseguir pegar qualquer um de seus campos.
 
 ```node
 {
-  allPessoas{
+  allResultados{
+    … on Adulto {
+      empresa
+    }
+    … on Crianca {
+      escola
+    }
+  }
+}
+```
+
+// Para terminar o union types
+
+### Meta Fields
+
+Dado que podemos ter algumas situações onde nós não sabemos qual tipo está sendo retornado em um serviço GraphQL, nós precisamos algum modo de determinar como lidar com os dados no frontend. O Graphql permite solicitar no request __typename, um meta campo, em qualquer ponto da query para pegar o nome do tipo do objeto.
+
+```node
+// Query
+{
+  search(text: "an") {
     __typename
-    nome
-    idade
+    ... on Human {
+      name
+    }
+    ... on Droid {
+      name
+    }
+    ... on Starship {
+      name
+    }
   }
 }
 ```
@@ -636,41 +877,24 @@ O campo "__typename" irá retornar "Pessoa", nos permitindo saber que o nome do 
 // Retorno
 {
   "data": {
-    "allPessoas": [
+    "search": [
       {
-        "__typename": "Pessoa",
-        "nome": "Maria",
-        "idade": 25
+        "__typename": "Human",
+        "name": "Han Solo"
       },
       {
-        "__typename": "Pessoa",
-        "nome": "João",
-        "idade": 26
+        "__typename": "Human",
+        "name": "Leia Organa"
+      },
+      {
+        "__typename": "Starship",
+        "name": "TIE Advanced x1"
       }
     ]
   }
 }
 ```
 
-Caso seja preciso mais dados, podemos utilizar a seguinte sintaxe:
+Na query acima, a busca nos retornou o Union Type que pode ser uma das três opções. Isso seria impossivel de dizer qual seria a diferença entre os tipos no frontend sem o campo __typename.
 
-```node
-{
-  __type(name: "Pessoa") {
-    name
-    kind
-  }
-}
-```
-
-```node
-// Retorno
-{
-  "data": {
-    "__type": {
-      "name": "Pessoa",
-      "kind": "OBJECT"
-    }
-  }
-}
-```
+Serviços GraphQL provem alguns outros meta fields, sendo possivel encontrá-los na sua documentação.

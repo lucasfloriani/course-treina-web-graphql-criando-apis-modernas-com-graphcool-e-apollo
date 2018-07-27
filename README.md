@@ -898,3 +898,43 @@ Dado que podemos ter algumas situações onde nós não sabemos qual tipo está 
 Na query acima, a busca nos retornou o Union Type que pode ser uma das três opções. Isso seria impossivel de dizer qual seria a diferença entre os tipos no frontend sem o campo __typename.
 
 Serviços GraphQL provem alguns outros meta fields, sendo possivel encontrá-los na sua documentação.
+
+### Input Types
+
+São utilizados quando precisamos de campos mais complexos. Aí que entram os tipos "Input". São muito úteis quando trabalhamos com Mutations.
+
+Para declará-los, fazemos da mesma forma ao declarar um tipo, mas usamos a palavra-chave "input".
+
+```node
+input DocumentosInput{
+  rg: String
+  cpf: String
+}
+```
+
+Poderíamos ter um Mutation para criar uma Pessoa com Documentos assim:
+
+```node
+mutation CreatePessoa($nome: String!, $idade: Int!, $documentos: DocumentosInput!){
+  createPessoa(nome: $nome, idade: $idade, documentos: $documentos) {
+    id
+  }
+}
+```
+
+E as variáveis serem passadas assim:
+
+```node
+{
+  nome: "Maria"
+  idade: 25
+  documentos: {
+    rg: "11111111111",
+    cpf: "222.222.222-22"
+  }
+}
+```
+
+Veja que ao criar o Mutation, a passagem do campo "documentos" ficou bem simples.
+
+Podemos ver os Inputs como declaração do tipo de um campo, e que não terá todas as funcionalidades que vimos que os Types possuem, como por exemplo argumentos em sua declaração.

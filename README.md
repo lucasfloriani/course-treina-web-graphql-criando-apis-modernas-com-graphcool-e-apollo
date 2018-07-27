@@ -938,3 +938,25 @@ E as variáveis serem passadas assim:
 Veja que ao criar o Mutation, a passagem do campo "documentos" ficou bem simples.
 
 Podemos ver os Inputs como declaração do tipo de um campo, e que não terá todas as funcionalidades que vimos que os Types possuem, como por exemplo argumentos em sua declaração.
+
+## Bibliotecas para GraphQL
+
+### Frontend
+
+Há duas principais bibliotecas para o lado do Cliente quando se trabalha com GraphQL: Apollo Client e Relay.
+
+#### Relay
+
+O Relay é desenvolvido pelo Facebook, que também criou o React e o GraphQL. Ele possui várias otimizações para performance, mas só trabalha com React e apenas está disponível para desenvolvimento web.
+
+#### Apollo
+
+O Apollo é um cliente que visa ser poderoso e flexível. Ele dá suporte ás maiores plataformas de desenvolviment, tanto web quanto mobile, como:
+
+* Android Nativo;
+* iOS Nativo;
+* Vue.js;
+* Angular;
+* React;
+* React Native;
+* Meteor;

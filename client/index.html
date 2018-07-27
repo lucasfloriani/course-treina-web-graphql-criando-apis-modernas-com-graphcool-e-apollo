@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Treinaweb</title>
+  </head>
+  <body>
+    <div id="app" >
+
+      <input type="text" v-model="newTitle" />
+      <button @click="create()" >Create</button>
+
+      <ul>
+        <li v-for="post in allPosts" :key="post.id" >
+          <button @click="edit(post)">Edit</button>
+          <button @click="remove(post)">Delete</button>
+          - {{ post.titulo }}
+        </li>
+      </ul>
+
+
+    </div>
+  <script src="dist/build.js"></script>
+  </body>
+</html>

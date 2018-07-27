@@ -960,3 +960,7 @@ O Apollo é um cliente que visa ser poderoso e flexível. Ele dá suporte ás ma
 * React;
 * React Native;
 * Meteor;
+
+## Servidor
+
+O GraphQL é uma tecnologia voltada para o Front End, já que permite que ele faça poderosas requisições através de uma única API. Mas para que isso seja possível, é necessário um servidor que forneça essa API com esse serviço.

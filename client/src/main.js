@@ -9,10 +9,12 @@ import { getMainDefinition } from 'apollo-utilities';
 
 import Operations from './Operations';
 
-var httpLink = new HttpLink({uri: 'https://api.graph.cool/simple/v1/cjjyplx1d2f3j0148betz1vww'});
+// var httpLink = new HttpLink({uri: 'https://api.graph.cool/simple/v1/cjjyplx1d2f3j0148betz1vww'});
+var httpLink = new HttpLink({uri: 'http://localhost:3000/graphql'});
 
 var wsLink = new WebSocketLink({
-	uri: 'wss://subscriptions.graph.cool/v1/cjjyplx1d2f3j0148betz1vww',
+	// uri: 'wss://subscriptions.graph.cool/v1/cjjyplx1d2f3j0148betz1vww',
+	uri: 'ws://localhost:3000/subscriptions',
 	options: {
 		reconnect: true
 	}

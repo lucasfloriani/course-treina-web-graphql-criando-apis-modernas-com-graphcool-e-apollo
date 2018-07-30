@@ -10,8 +10,9 @@ export const Post = {
 		}
 	`,
 	create: gql `
-		mutation CreatePost($titulo: String!, $autorId: ID!){
-			createPost(titulo: $titulo, autorId: $autorId){
+		# mutation CreatePost($titulo: String!, $autorId: ID!){
+		mutation CreatePost($titulo: String!){
+			createPost(titulo: $titulo){
 				id
 				titulo
 			}
